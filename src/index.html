@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Sing!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<style type="text/css">
+
+		body {
+			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+			color: #eee;
+			overflow: hidden;
+			background: rgb(40, 40, 40);
+
+			height: 100%;
+			width: 100%;
+			margin: 0px;
+			padding: 0px;
+		}
+
+		canvas {
+			width: 100% !important;
+			height: 100% !important;
+			top: 0;
+			left: 0;
+		}
+
+		
+		</style>
+	</head>
+	<body>
+	<script src="//povdocs.github.io/webvr-starter-kit/build/vr.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="js/popcorn.js"></script>
+	<script type="text/javascript" src="js/popcorn-base.js"></script>
+	<script type="text/javascript" src="js/popcorn.parserUltra.js"></script>
+	<script type="text/javascript" src="js/popcorn.remote.js"></script>
+	<!-- <script type="text/javascript" src="js/popcorn.vrkaraoke.js"></script> -->
+	<script type="text/javascript">
+	//temporary popcorn plugin for just words that will be replaced by full-on karaoke
+    Popcorn.plugin('karaoke', function (options) {
+        var parent = options.target || VR,
+        	text = parent.text(options),
+            x = options.x || 0,
+            y = options.y || 0,
+            z = options.z || 0;
+
+        text.visible = false;
+        text.moveTo(x, y, z);
+        text.setScale(0.5)
+
+        return {
+            start: function () {
+                text.visible = true;
+            },
+            end: function () {
+                text.visible = false;
+            }
+        }
+    });
+
+	</script>
+	<script type="text/javascript" src="js/index.js"></script>	
+</html>

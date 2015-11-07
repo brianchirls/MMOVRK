@@ -1,0 +1,68 @@
+{
+  "name": "mozfestkaraoke",
+  "version": "0.0.2",
+  "author": "Brian Chirls <brian@chirls.com>",
+  "description": "Multi-screen Karaoke",
+  "scripts": {
+    "start": "node ./server.js",
+    "predeploy": "echo This will be run before deploying the app",
+    "postdeploy": "echo This will be run after deploying the app"
+  },
+  "main": "./server",
+  "keywords": [
+    "karaoke"
+  ],
+  "dependencies": {
+    "express": "*",
+    "shader-particle-engine": "^1.0.2",
+    "socket.io": "*"
+  },
+  "license": "MIT",
+  "subdomain": "mozfestkaraoke",
+  "devDependencies": {
+    "babel-core": "^5.4.3",
+    "babel-loader": "^5.1.2",
+    "del": "^1.2.0",
+    "exports-loader": "^0.6.2",
+    "gulp": "^3.8.11",
+    "gulp-webpack": "^1.4.0",
+    "imports-loader": "^0.6.5",
+    "jshint": "^2.7.0",
+    "jshint-loader": "^0.8.3",
+    "node-libs-browser": "^0.5.0",
+    "object-assign": "^3.0.0",
+    "webpack": "^1.9.7"
+  },
+  "jshintConfig": {
+    "globals": {
+      "console": true,
+      "VR": true,
+      "THREE": true
+    },
+    "esnext": true,
+    "bitwise": true,
+    "browser": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "es3": true,
+    "forin": true,
+    "freeze": true,
+    "funcscope": true,
+    "globalstrict": true,
+    "immed": true,
+    "iterator": true,
+    "latedef": true,
+    "maxparams": 4,
+    "newcap": true,
+    "noarg": true,
+    "nonbsp": true,
+    "nonew": true,
+    "notypeof": true,
+    "quotmark": "single",
+    "shadow": true,
+    "singleGroups": true,
+    "undef": true,
+    "unused": true
+  }
+}

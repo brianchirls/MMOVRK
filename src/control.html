@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+	<head>
+		<meta charset="UTF-8">
+		<title>Go away</title>
+		<style type="text/css">
+		
+		body {
+			color: white;
+			background-color: #000;
+			font-family: Helvetica,Arial,sans-serif;
+			font-size: 12px;
+			margin: auto;
+			padding: 0;
+		}
+
+		header {
+			padding: 0 40px;
+		}
+
+		#main-container {
+			position: relative;
+			overflow: hidden;
+		}
+
+		#video-container {
+			position: relative;
+			height: 100%;
+		}
+
+		#video-container .vjs-big-play-button,
+		#video-container .vjs-controls,
+		#video-container .vjs-styles-check {
+			z-index: 202;
+		}
+		
+		#video-container .vjs-spinner {
+			z-index: 201;
+		}
+		
+		/* disable full screen button */
+		#video-container .vjs-fullscreen-control {
+			display: none;
+		}
+		#video-container .vjs-volume-control {
+			right: 10px;
+		}
+		#video-container .vjs-time-control {
+			right: 65px;
+		}
+		#video-container .vjs-progress-control {
+			right: 140px;
+		}
+
+		#video-container .popcorn-words {
+			z-index: 250;
+		}
+
+		#video-container video {
+			display: block;
+			height: 100%;
+			margin: 0 auto;
+		}
+		
+		#video-container {
+			font-size: 20px;
+			line-height: normal;
+		}
+
+		#video-container > div {
+			line-height: normal;
+		}
+		
+		#pop-container > div {
+			/* default position */
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		h1 {
+			text-align: center;
+			font-size: 80px;
+		}
+
+		h2 {
+			text-align: center;
+			font-size: 40px;
+		}
+
+		</style>
+	</head>
+	<body>
+		<header></header>
+		<div style=" width: 100%">
+			<h1>http://mozfestkaraoke.jit.su</h1>
+			<div id="main-container">
+					<audio id="video" preload controls style="width: 500px; text-align: center">
+						<source src="karaoke.webm" type='audio/webm'/>
+					</video>
+				<!--
+				<div id="video-container" class="video-js-box">
+					<video id="video" preload class="video-js" data-butter="media" controls>
+						<source src="eclipse.webm" type='video/webm; codecs="vp8, vorbis"'/>
+						<source src="http://code.chirls.com/eclipse.webm" type='video/webm; codecs="vp8, vorbis"'/>
+						<source src="http://localhost:8888/code/mozfest/video/eclipse.webm" type='video/webm; codecs="vp8, vorbis"'/>
+					</video>
+				</div>
+			-->
+			</div>
+		</div>
+	</body>
+	<script src="/socket.io/socket.io.js"></script>
+<!--	<script type="text/javascript" src="js/popcorn.image.js"></script>-->
+	<script type="text/javascript">
+	
+	window.addEventListener('DOMContentLoaded', function() {
+		var socket;
+		var minDiff = Infinity, maxDiff = -Infinity, timingDiff = 0, clientReceived;
+		var synced = false;
+
+		var durationSent = false, connected = false;
+
+		function onMessage(message) {
+			var accuracy;
+			
+			if (!message) return;
+
+			if (message === 'control') {
+				connected = true;
+				if (!durationSent && video.duration) {
+
+					socket.json.send({
+						action: 'set',
+						value: { 'duration': video.duration }
+					});
+
+					durationSent = true;
+				}
+				return;
+			}
+
+			clientReceived = Date.now();
+			if (message.timing !== undefined) {
+				minDiff = Math.min(minDiff, clientReceived - message.timing);
+	
+				if (minDiff !== undefined) {
+					if (message.maxDiff !== undefined) {
+						maxDiff = message.maxDiff;
+						timingDiff = minDiff + (maxDiff - minDiff) / 2
+						
+						accuracy = Math.abs(maxDiff - minDiff);
+						console.log('accuracy', accuracy);
+						if (accuracy < 200) {
+							
+							if (!synced) {
+								synced = true;
+							}
+
+							if (accuracy < 50) {
+								clearInterval(timingInterval);
+								console.log('done');
+							}
+						}
+					} else {
+						timingDiff = minDiff;
+					}
+				}
+			}
+		}
+		
+		function requestTiming() {
+			socket.json.send({
+				action: 'sync',
+				minDiff:	minDiff,
+				timing:		Date.now()
+			});
+		}
+		
+		var timingInterval;
+		function initTiming() {
+			//socket = new io.Socket(null, {port: 8080, rememberTransport: false});
+			//socket.connect();
+			socket = io.connect(location.origin);
+			socket.on('message', onMessage);
+			socket.on('connect', function() {
+				socket.json.send({ action: 'control' });
+				requestTiming();
+				timingInterval = setInterval(requestTiming, 1000);
+
+			});
+			
+		}
+
+		initTiming();
+
+		var video = document.getElementById('video');
+		video.addEventListener('loadedmetadata', function() {
+			if (connected && !durationSent) {
+				socket.json.send({
+					action: 'set',
+					value: { 'duration': video.duration }
+				});
+
+				durationSent = true;
+			}
+		}, false);
+
+		function playUpdatetime() {
+			console.log('playing');
+			var playTime = (Date.now() - timingDiff) - video.currentTime * 1000;
+			socket.json.send({
+				action: video.paused ? 'pause' : 'play',
+				playTime: playTime
+			});
+		}
+
+		video.addEventListener('play', playUpdatetime, false);
+		video.addEventListener('seeked', playUpdatetime, false);
+
+		video.addEventListener('pause', function() {
+			socket.json.send({
+				action: 'pause'
+			});
+		}, false);
+
+	}, false);
+	
+	</script>
+</html>
