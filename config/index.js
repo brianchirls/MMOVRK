@@ -20,6 +20,11 @@ module.exports = (function () {
 					test: /\.js$/,
 					exclude: /node_modules|bower_components|src\/js\/lib/,
 					loader: 'jshint-loader'
+				},
+				{
+					test:	/\.js$/,
+					exclude: /node_modules|bower_components|src\/js\/lib/,
+					loader: 'jscs-loader'
 				}
 			],
 			loaders: [
@@ -43,7 +48,20 @@ module.exports = (function () {
 		jshint: assign({
 			failOnHint: true,
 			emitErrors: true
-		}, pkg.jshintConfig)
+		}, pkg.jshintConfig),
+
+		jscs: {
+			emitErrors: true,
+			failOnHint: true,
+			esnext: true,
+
+			preset: 'crockford',
+			validateIndentation: '\t',
+			validateLineBreaks: 'LF',
+			requireLineFeedAtFileEnd: null,
+			validateQuoteMarks: '\'',
+			requireMultipleVarDecl: false
+		}
 	};
 
 	var exports = {};

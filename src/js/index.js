@@ -59,7 +59,7 @@
 			},
 
 			color: {
-				value: [ new THREE.Color( 0.5, 0.5, 0.5 ), new THREE.Color() ],
+				value: [new THREE.Color(0.5, 0.5, 0.5), new THREE.Color()],
 				spread: new THREE.Vector3(1, 1, 1)
 			},
 			size: {
@@ -69,8 +69,8 @@
 			particleCount: 1500
 		});
 
-		particleGroup.addEmitter( emitter );
-		scene.add( particleGroup.mesh );
+		particleGroup.addEmitter(emitter);
+		scene.add(particleGroup.mesh);
 
 	}
 
